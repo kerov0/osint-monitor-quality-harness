@@ -1,0 +1,37 @@
+{
+  "name": "osint-monitor-quality-harness",
+  "version": "1.0.0",
+  "description": "A small system that ingests synthetic “internet monitoring” findings, normalizes them, validates them, links entities into a graph-like structure, and tests the flow end-to-end.",
+  "main": "index.js",
+  "types": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kerov0/osint-monitor-quality-harness.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kerov0/osint-monitor-quality-harness/issues"
+  },
+  "homepage": "https://github.com/kerov0/osint-monitor-quality-harness#readme",
+  "dependencies": {
+    "fastify": "^5.10.0",
+    "pino": "^10.3.1",
+    "prom-client": "^15.1.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.0",
+    "tsx": "^4.23.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
+  }
+}
