@@ -7,7 +7,10 @@
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "observability:up": "docker compose up",
+    "observability:down": "docker compose down",
+    "load:jmeter": "jmeter -n -t load-tests/jmeter/osint-monitor-smoke.jmx -l load-tests/results/osint-monitor-smoke.jtl -e -o load-tests/results/report"
   },
   "repository": {
     "type": "git",
