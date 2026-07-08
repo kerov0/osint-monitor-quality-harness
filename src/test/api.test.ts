@@ -3,6 +3,16 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { buildApp } from "../app.js";
 import { makeFinding, validFinding } from "./finding-fixtures.js";
 
+function readMetric(metricsText: string, name: string): number | undefined {
+  const line = metricsText.split("\n").find((entry) => entry.startsWith(`${name} `));
+
+  if (line === undefined) {
+    return undefined;
+  }
+
+  return Number(line.split(" ")[1]);
+}
+
 describe("Fastify API", () => {
   let app: FastifyInstance;
 
@@ -32,6 +42,20 @@ describe("Fastify API", () => {
     expect(body.status).toBe("ok");
     expect(body.service).toBe("monitoring-data-quality-demo");
     expect(Date.parse(body.timestamp)).not.toBeNaN();
+  });
+
+  it("exposes Prometheus metrics", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/metrics",
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.headers["content-type"]).toContain("text/plain");
+    expect(response.body).toContain("# HELP findings_accepted_total");
+    expect(response.body).toContain("# TYPE findings_accepted_total counter");
+    expect(readMetric(response.body, "graph_nodes_total")).toBe(0);
+    expect(readMetric(response.body, "graph_edges_total")).toBe(0);
   });
 
   it("accepts a valid finding", async () => {
@@ -204,5 +228,73 @@ describe("Fastify API", () => {
         },
       ]),
     );
+  });
+
+  it("updates metrics for accepted, duplicate, rejected, and graph requests", async () => {
+    await app.inject({
+      method: "POST",
+      url: "/findings",
+      payload: validFinding,
+    });
+    await app.inject({
+      method: "POST",
+      url: "/findings",
+      payload: makeFinding({
+        vendor: "  ACME   Corp  ",
+        category: "credential   leak",
+      }),
+    });
+    await app.inject({
+      method: "POST",
+      url: "/findings",
+      payload: makeFinding({
+        url: "not-a-url",
+      }),
+    });
+    await app.inject({
+      method: "GET",
+      url: "/graph",
+    });
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/metrics",
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(readMetric(response.body, "findings_accepted_total")).toBe(1);
+    expect(readMetric(response.body, "findings_duplicates_total")).toBe(1);
+    expect(readMetric(response.body, "findings_rejected_total")).toBe(1);
+    expect(readMetric(response.body, "graph_nodes_total")).toBe(4);
+    expect(readMetric(response.body, "graph_edges_total")).toBe(3);
+  });
+
+  it("keeps metrics isolated between app instances", async () => {
+    await app.inject({
+      method: "POST",
+      url: "/findings",
+      payload: validFinding,
+    });
+
+    const currentMetrics = await app.inject({
+      method: "GET",
+      url: "/metrics",
+    });
+
+    expect(readMetric(currentMetrics.body, "findings_accepted_total")).toBe(1);
+
+    const freshApp = await buildApp({ logger: false });
+    await freshApp.ready();
+
+    try {
+      const freshMetrics = await freshApp.inject({
+        method: "GET",
+        url: "/metrics",
+      });
+
+      expect(readMetric(freshMetrics.body, "findings_accepted_total") ?? 0).toBe(0);
+    } finally {
+      await freshApp.close();
+    }
   });
 });

@@ -15,6 +15,10 @@ more realistic data sources.
 - Duplicate detection based on URL, normalized vendor, and normalized category.
 - In-memory listing of accepted findings.
 - A graph projection that links sources, vendors, URLs, and categories.
+- Prometheus metrics for finding outcomes and graph size.
+- Dockerized Prometheus/Grafana config for local observability.
+- JMeter load-test run documentation for a manually supplied test plan.
+- GitHub Actions CI for install, typecheck, and tests.
 - Fastify route tests using `app.inject()`.
 - Focused helper tests for normalization and duplicate-key behavior.
 
@@ -40,6 +44,7 @@ Useful endpoints:
 - `POST /findings`
 - `GET /findings`
 - `GET /graph`
+- `GET /metrics`
 
 Example finding payload:
 
@@ -70,30 +75,49 @@ npm run typecheck
 ```
 
 The test suite covers valid and invalid finding ingestion, duplicate detection,
-finding listing, graph output, the health endpoint, and the core normalization
-and duplicate-key helpers.
+finding listing, graph output, the health endpoint, metrics output, and the core
+normalization and duplicate-key helpers.
 
 See [docs/test-strategy.md](docs/test-strategy.md) for the current test
 boundary and likely next phases.
 
+## Load Testing And Observability
+
+The expected local flow is:
+
+1. Start the API with `npm run dev`.
+2. Run the manually created JMeter plan at
+   `load-tests/jmeter/osint-monitor-smoke.jmx`.
+3. Start Dockerized Prometheus and Grafana with `docker compose up`.
+4. Verify Prometheus is scraping `host.docker.internal:3000/metrics`.
+5. View the Grafana dashboard at `http://localhost:3001`.
+
+See [docs/load-testing.md](docs/load-testing.md) for commands and verification
+steps.
+
 ## Project Structure
 
 ```text
+.github/
+docker-compose.yml
 src/
   app.ts
   server.ts
   domain/
+  observability/
   routes/
   services/
   store/
   test/
 docs/
+  load-testing.md
   test-strategy.md
+observability/
+  prometheus/
+  grafana/
 ```
 
 ## Not Implemented In This Step
 
-This pass adds the API tests and documentation only. Grafana dashboards, JMeter
-load tests, CI, deployment automation, authentication, persistent storage, and
-real collection integrations are natural follow-on slices, but they are not part
-of this specific change.
+Deployment automation, authentication, persistent storage, and real collection
+integrations remain later slices.

@@ -16,8 +16,11 @@ reporting.
 - Accepted findings can be listed.
 - The graph endpoint returns the expected nodes and edges.
 - The health endpoint returns service status and a parseable timestamp.
+- The metrics endpoint returns Prometheus text output.
+- Metrics tests assert finding outcome counters and graph size values.
 - Helper tests cover text normalization, duplicate-key creation, and duplicate
   store inserts.
+- CI runs `npm ci`, `npm run typecheck`, and `npm test`.
 
 ## Fixture Approach
 
@@ -34,9 +37,9 @@ npm run typecheck
 
 Both commands are part of the definition of done for changes in this repo.
 
-## Not Covered In This Step
+## Not Covered By Automated Tests
 
-The current suite does not yet cover load testing, Grafana dashboards, CI,
-deployment, persistent storage, authentication, authorization, real OSINT data
-collection, or browser-based workflows. Those remain valid next phases; they are
-just outside this test-and-docs pass.
+The automated suite does not execute JMeter, Prometheus, Grafana, deployment,
+persistent storage, authentication, authorization, real OSINT data collection,
+or browser-based workflows. JMeter and Dockerized observability are verified
+manually with the flow in [load-testing.md](load-testing.md).

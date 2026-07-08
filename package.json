@@ -1,9 +1,8 @@
 {
   "name": "osint-monitor-quality-harness",
   "version": "1.0.0",
-  "description": "A small system that ingests synthetic “internet monitoring” findings, normalizes them, validates them, links entities into a graph-like structure, and tests the flow end-to-end.",
+  "description": "A simulation harness for internet-monitoring data-quality workflows.",
   "main": "index.js",
-  "types": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
