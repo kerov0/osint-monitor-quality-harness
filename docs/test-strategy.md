@@ -41,5 +41,6 @@ Both commands are part of the definition of done for changes in this repo.
 
 The automated suite does not execute JMeter, Prometheus, Grafana, deployment,
 persistent storage, authentication, authorization, real OSINT data collection,
-or browser-based workflows. JMeter and Dockerized observability are verified
-manually with the flow in [load-testing.md](load-testing.md).
+or browser-based workflows. The verified manual flow is API -> JMeter traffic ->
+`/metrics` -> Prometheus -> Grafana dashboard, documented in
+[load-testing.md](load-testing.md).

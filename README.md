@@ -5,9 +5,9 @@ the core loop of ingesting synthetic OSINT findings, validating their shape,
 normalizing entity fields, detecting duplicates, storing accepted observations,
 and projecting them into a graph-like structure.
 
-The goal is to provide a clean base environment that can be exercised by tests
-now and expanded later with dashboards, load tests, CI checks, deployment, and
-more realistic data sources.
+The goal is to provide a clean base environment that can be exercised by tests,
+driven with JMeter traffic, and observed through Prometheus/Grafana before
+adding deployment or more realistic data sources.
 
 ## Current Capabilities
 
@@ -83,14 +83,15 @@ boundary and likely next phases.
 
 ## Load Testing And Observability
 
-The expected local flow is:
+The verified local flow is:
 
 1. Start the API with `npm run dev`.
-2. Run the manually created JMeter plan at
-   `load-tests/jmeter/osint-monitor-smoke.jmx`.
-3. Start Dockerized Prometheus and Grafana with `docker compose up`.
-4. Verify Prometheus is scraping `host.docker.internal:3000/metrics`.
-5. View the Grafana dashboard at `http://localhost:3001`.
+2. Run the JMeter smoke/load plan with `npm run load:jmeter`.
+3. Confirm the API exposes metrics at `http://127.0.0.1:3000/metrics`.
+4. Start Dockerized Prometheus and Grafana with `npm run observability:up`.
+5. Check Prometheus at `http://localhost:9090` and targets at
+   `http://localhost:9090/targets`.
+6. View the provisioned Grafana dashboard at `http://localhost:3001`.
 
 See [docs/load-testing.md](docs/load-testing.md) for commands and verification
 steps.
