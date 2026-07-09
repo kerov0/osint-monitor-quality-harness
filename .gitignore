@@ -1,6 +1,9 @@
 /node_modules
 /reports
 /dist
+.env
+.env.*
+!.env.example
 *.log
 .DS_Store
 load-tests/results/

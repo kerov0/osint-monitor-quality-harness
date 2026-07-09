@@ -88,10 +88,11 @@ The verified local flow is:
 1. Start the API with `npm run dev`.
 2. Run the JMeter smoke/load plan with `npm run load:jmeter`.
 3. Confirm the API exposes metrics at `http://127.0.0.1:3000/metrics`.
-4. Start Dockerized Prometheus and Grafana with `npm run observability:up`.
-5. Check Prometheus at `http://localhost:9090` and targets at
+4. Create `.env` from `.env.example` and set the Grafana credentials.
+5. Start Dockerized Prometheus and Grafana with `npm run observability:up`.
+6. Check Prometheus at `http://localhost:9090` and targets at
    `http://localhost:9090/targets`.
-6. View the provisioned Grafana dashboard at `http://localhost:3001`.
+7. View the provisioned Grafana dashboard at `http://localhost:3001`.
 
 See [docs/load-testing.md](docs/load-testing.md) for commands and verification
 steps.

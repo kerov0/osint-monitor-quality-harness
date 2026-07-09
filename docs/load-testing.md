@@ -16,6 +16,7 @@ Prometheus and Grafana run in Docker and scrape the host API at
 - Local JMeter installed and available as `jmeter`.
 - Docker with Docker Compose support.
 - JMeter test plan at `load-tests/jmeter/osint-monitor-smoke.jmx`.
+- Local `.env` file created from `.env.example` with Grafana credentials set.
 
 Generated JMeter output should be written under `load-tests/results/`, which is
 ignored by git.
@@ -67,24 +68,29 @@ Expected checks:
 Preferred npm command:
 
 ```sh
+cp .env.example .env
 npm run observability:up
 ```
 
 Equivalent Docker Compose command:
 
 ```sh
+cp .env.example .env
 docker compose up
 ```
+
+Edit `.env` before starting Grafana if you want credentials other than the
+example values.
 
 Prometheus runs at `http://localhost:9090` and scrapes the API at
 `host.docker.internal:3000/metrics`.
 
 Grafana runs at `http://localhost:3001`.
 
-Default Grafana login:
+Grafana login values are read from `.env`:
 
-- username: `admin`
-- password: `admin`
+- username: `GRAFANA_ADMIN_USER`
+- password: `GRAFANA_ADMIN_PASSWORD`
 
 ## 4. Verify Prometheus
 
@@ -106,8 +112,8 @@ Expected checks:
 
 ## 5. Verify Grafana
 
-Open `http://localhost:3001`, log in with `admin` / `admin`, and open the
-provisioned `OSINT Monitor Quality Harness` dashboard.
+Open `http://localhost:3001`, log in with the credentials from `.env`, and open
+the provisioned `OSINT Monitor Quality Harness` dashboard.
 
 Expected dashboard panels:
 
@@ -155,3 +161,15 @@ If JMeter report generation fails:
 - Make sure the API is running before starting JMeter.
 - Remove or empty `load-tests/results/report` before regenerating the HTML
   report, because JMeter expects the report output directory to be empty.
+
+## GitHub Secrets
+
+For any GitHub Actions workflow that runs Docker Compose, create repository
+secrets named `GRAFANA_ADMIN_USER` and `GRAFANA_ADMIN_PASSWORD`, then expose them
+to the Compose step:
+
+```yaml
+env:
+  GRAFANA_ADMIN_USER: ${{ secrets.GRAFANA_ADMIN_USER }}
+  GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+```
